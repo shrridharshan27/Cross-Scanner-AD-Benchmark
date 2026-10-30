@@ -1,0 +1,20 @@
+=== MILESTONE 3 RESULTS ===
+=== FULL BENCHMARK COMPARISON ===
+
+Method           | OASIS AUROC     | Spanish AUROC   | Gap     
+----------------|---------------|---------------|--------
+LR (baseline)    | 0.86±0.08         | 0.71±0.03         | +0.16
+SVM (baseline)   | 0.85±0.09         | 0.70±0.02         | +0.15
+MLP (baseline)   | 0.88±0.05         | 0.75±0.02         | +0.14
+ComBat+MLP       | 0.76±0.04         | 0.72±0.07         | +0.04
+DANN             | 0.80±0.03         | 0.65±0.12         | +0.15
+
+Best method on Spanish cohort: MLP (baseline)
+Gap recovery by ComBat: -0.02 AUROC points
+Gap recovery by DANN:   -0.10 AUROC points
+
+LIMITATIONS:
+- Spanish cohort n=54 (eval n≈43), CIs are wide
+- Cannot definitively rank ComBat vs DANN at this sample size
+- OASIS-1 has single scanner (no source domain diversity for DANN)
+- Feature pipelines differ between cohorts (FreeSurfer vs SPM)

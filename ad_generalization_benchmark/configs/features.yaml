@@ -1,0 +1,22 @@
+oasis1_features:
+  - nWBV
+  - eTIV
+  - age
+  - sex
+spanish_features:
+  - brain_vol_ratio
+  - icv_estimate
+  - age
+  - sex
+feature_alignment:
+  nWBV: brain_vol_ratio
+  eTIV: icv_estimate
+  age: age
+  sex: sex
+label_maps:
+  oasis1:
+    0.0: 0
+    1.0: 1
+  spanish:
+    ea: 1
+    crl: 0

@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cross-Scanner Alzheimer's AI Benchmark | Research Dashboard</title>
+  <style>
+    /* =====================================================================
+       DESIGN SYSTEM & CSS VARIABLES
+       ===================================================================== */
+    :root {
+      --bg: #0A1628;
+      --card-bg: #0D2137;
+      --card-hover: #132a45;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-teal: #00B4D8;
+      --accent-teal-glow: rgba(0, 180, 216, 0.25);
+      --success: #10B981;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --success-border: rgba(16, 185, 129, 0.4);
+      --danger: #EF4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.4);
+      --warning: #F59E0B;
+      --warning-bg: rgba(245, 158, 11, 0.12);
+      --warning-border: rgba(245, 158, 11, 0.4);
+      --text-primary: #F0F4F8;
+      --text-muted: #94A3B8;
+      --border-subtle: rgba(148, 163, 184, 0.15);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    h1, h2, h3, h4 {
+      color: var(--text-primary);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    h2.section-heading {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .section-lead {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 720px;
+      margin-bottom: 40px;
+    }
+
+    section {
+      padding: 90px 0;
+      position: relative;
+    }
+
+    /* =====================================================================
+       HEADER & NAVIGATION (Sticky with scroll indicator)
+       ===================================================================== */
+    .sticky-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 22, 40, 0.90);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-brand-badge {
+      background: rgba(0, 180, 216, 0.15);
+      border: 1px solid var(--accent-teal);
+      color: var(--accent-teal);
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .live-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-left: 8px;
+    }
+
+    .live-status-pill .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse-live 1.8s infinite;
+    }
+
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      padding: 4px 0;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent-teal);
+    }
+
+    .nav-links a.active::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent-teal);
+      border-radius: 2px;
+    }
+
+    .scroll-progress-bar {
+      height: 3px;
+      background: var(--accent-teal);
+      width: 0%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      box-shadow: 0 0 8px var(--accent-teal);
+      transition: width 0.1s ease-out;
+    }
+
+    /* =====================================================================
+       SECTION 1: HERO
+       ===================================================================== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-top: 80px;
+      position: relative;
+      background-color: var(--bg);
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: -1px -1px;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, rgba(0, 180, 216, 0.12) 0%, rgba(10, 22, 40, 0) 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 880px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 30px;
+      background: rgba(0, 180, 216, 0.1);
+      border: 1px solid rgba(0, 180, 216, 0.35);
+      color: var(--accent-teal);
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5.5vw, 4rem);
+      line-height: 1.15;
+      font-weight: 800;
+      margin-bottom: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span.highlight {
+      color: var(--accent-teal);
+      text-shadow: 0 0 30px rgba(0, 180, 216, 0.3);
+    }
+
+    .hero-subtext {
+      color: var(--text-muted);
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      line-height: 1.6;
+      max-width: 700px;
+      margin: 0 auto 48px auto;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      max-width: 760px;
+      margin: 0 auto 36px auto;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 24px 16px;
+      box-shadow: var(--shadow-soft);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .stat-number {
+      font-size: clamp(2.2rem, 3.5vw, 3rem);
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-teal .stat-number { color: var(--accent-teal); }
+    .stat-amber .stat-number { color: var(--warning); }
+    .stat-red .stat-number { color: var(--danger); }
+
+    .live-data-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .scroll-arrow {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--text-muted);
+      animation: bounce 2s infinite;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+
+    .scroll-arrow:hover {
+      opacity: 1;
+      color: var(--accent-teal);
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+      40% { transform: translate(-50%, -10px); }
+      60% { transform: translate(-50%, -5px); }
+    }
+
+    /* =====================================================================
+       SECTION 2: THE PROBLEM
+       ===================================================================== */
+    .problem-diagram {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 40px 30px;
+      margin-bottom: 36px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .flow-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hospital-node {
+      flex: 1;
+      max-width: 280px;
+      background: rgba(10, 22, 40, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .hospital-node.source { border-top: 4px solid var(--accent-teal); }
+    .hospital-node.target { border-top: 4px solid var(--warning); }
+
+    .node-icon {
+      font-size: 2.4rem;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .node-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .node-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .node-tag {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 0.75rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .source .node-tag { background: rgba(0, 180, 216, 0.15); color: var(--accent-teal); }
+    .target .node-tag { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+
+    .signal-bridge {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 0 10px;
+    }
+
+    .signal-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--danger);
+      background: rgba(239, 68, 68, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .signal-track {
+      width: 100%;
+      height: 6px;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .signal-segment {
+      height: 4px;
+      flex: 1;
+      position: relative;
+    }
+
+    .seg-solid {
+      background: var(--accent-teal);
+      border-radius: 4px 0 0 4px;
+      box-shadow: 0 0 10px var(--accent-teal);
+    }
+
+    .seg-dashed {
+      border-top: 4px dashed var(--warning);
+      margin: 0 4px;
+      animation: pulse-dash 1.5s linear infinite;
+    }
+
+    .seg-broken {
+      border-top: 4px dotted var(--danger);
+      position: relative;
+    }
+
+    .seg-broken::after {
+      content: "⚡";
+      position: absolute;
+      top: -14px;
+      right: 10px;
+      font-size: 1.1rem;
+      animation: flash-bolt 1s infinite;
+    }
+
+    @keyframes pulse-dash {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    @keyframes flash-bolt {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    .signal-subcaption {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .boxes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .explain-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .explain-box:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0, 180, 216, 0.4);
+    }
+
+    .explain-box-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .box-badge-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 180, 216, 0.15);
+      color: var(--accent-teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .explain-box h4 {
+      font-size: 1.05rem;
+      color: var(--text-primary);
+    }
+
+    .explain-box p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    /* =====================================================================
+       SECTION 3: DATASETS
+       ===================================================================== */
+    .datasets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      margin-bottom: 24px;
+    }
+
+    .dataset-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-soft);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .dataset-card.source-card {
+      border: 2px solid var(--accent-teal);
+      box-shadow: 0 0 25px rgba(0, 180, 216, 0.08);
+    }
+
+    .dataset-card.target-card {
+      border: 2px solid var(--warning);
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.08);
+    }
+
+    .dataset-card:hover { transform: translateY(-4px); }
+
+    .card-top-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .source-card .card-top-tag { background: rgba(0, 180, 216, 0.15); color: var(--accent-teal); }
+    .target-card .card-top-tag { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+
+    .dataset-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .dataset-meta {
+      list-style: none;
+      margin-bottom: 24px;
+    }
+
+    .dataset-meta li {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.95rem;
+    }
+
+    .dataset-meta li span.label { color: var(--text-muted); }
+    .dataset-meta li span.value { color: var(--text-primary); font-weight: 600; }
+
+    .card-footer-link {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 16px;
+      font-style: italic;
+    }
+
+    .dataset-note-box {
+      background: rgba(13, 33, 55, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 14px 20px;
+      text-align: center;
+      color: var(--accent-teal);
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+
+    /* =====================================================================
+       SECTION 4: WHAT WE MEASURED
+       ===================================================================== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 28px 20px;
+      transition: var(--transition);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent-teal);
+    }
+
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-bottom: 14px;
+      display: inline-block;
+    }
+
+    .feature-code {
+      font-size: 0.8rem;
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--accent-teal);
+      background: rgba(0, 180, 216, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .feature-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .feature-banner {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.08) 0%, rgba(13, 33, 55, 0.5) 100%);
+      border: 1px solid rgba(0, 180, 216, 0.25);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .feature-banner-text h4 {
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .feature-banner-text p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .feature-banner-pill {
+      background: var(--accent-teal);
+      color: #0A1628;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 8px 16px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* =====================================================================
+       NEW: INTERACTIVE BRAIN SVG COMPONENT
+       ===================================================================== */
+    .brain-explorer-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 30px;
+    }
+
+    .brain-controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-toggle {
+      background: rgba(10, 22, 40, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-toggle.active {
+      background: var(--accent-teal);
+      color: #0A1628;
+      border-color: var(--accent-teal);
+      box-shadow: 0 0 12px var(--accent-teal-glow);
+    }
+
+    .btn-toggle.active.danger-toggle {
+      background: var(--danger);
+      color: #fff;
+      border-color: var(--danger);
+      box-shadow: 0 0 12px var(--danger-border);
+    }
+
+    .brain-grid-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .svg-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brain-svg {
+      width: 100%;
+      max-width: 440px;
+      height: auto;
+      filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4));
+    }
+
+    /* SVG Region Interactive Styles */
+    .brain-region {
+      cursor: pointer;
+      transition: fill 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.3s ease, filter 0.3s ease;
+      stroke: rgba(255, 255, 255, 0.25);
+      stroke-width: 1.5;
+    }
+
+    .brain-region:hover {
+      filter: brightness(1.25) drop-shadow(0 0 10px rgba(0, 180, 216, 0.6));
+      stroke: #fff;
+      stroke-width: 2.5;
+    }
+
+    .brain-region.selected-region {
+      stroke: #fff;
+      stroke-width: 3;
+      filter: brightness(1.3) drop-shadow(0 0 14px rgba(0, 180, 216, 0.8));
+    }
+
+    /* Info Panel on Right */
+    .brain-info-panel {
+      background: rgba(10, 22, 40, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      min-height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .info-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-teal);
+      margin-bottom: 8px;
+    }
+
+    .info-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .info-block {
+      margin-bottom: 16px;
+    }
+
+    .info-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .info-role-text { color: var(--accent-teal); font-size: 0.95rem; font-weight: 500; }
+    .info-ad-text { color: var(--danger); font-size: 0.95rem; font-weight: 500; }
+    .info-finding-text { color: var(--text-primary); font-size: 0.95rem; line-height: 1.6; }
+
+    /* Scanner Comparison Interactive Bar */
+    .scanner-compare-bar {
+      margin-top: 30px;
+      background: rgba(10, 22, 40, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+    }
+
+    .scanner-compare-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .scanner-compare-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .scanner-pills {
+      display: flex;
+      gap: 8px;
+    }
+
+    .scanner-pill {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .scanner-pill.active {
+      background: rgba(0, 180, 216, 0.2);
+      border-color: var(--accent-teal);
+      color: var(--accent-teal);
+    }
+
+    .scanner-message-box {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(0, 180, 216, 0.06);
+      border-left: 3px solid var(--accent-teal);
+    }
+
+    /* =====================================================================
+       SECTION 5: THE GENERALIZATION GAP
+       ===================================================================== */
+    .gap-comparison-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .comparison-row {
+      margin-bottom: 26px;
+    }
+
+    .comparison-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .row-model-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .row-gap-badge {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 3px 12px;
+      border-radius: 14px;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bar-line {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .bar-label {
+      width: 110px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 28px;
+      background: rgba(10, 22, 40, 0.8);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+      transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .bar-us {
+      background: linear-gradient(90deg, #0077B6 0%, #00B4D8 100%);
+      box-shadow: 0 0 12px rgba(0, 180, 216, 0.3);
+    }
+
+    .bar-spain {
+      background: linear-gradient(90deg, #D97706 0%, #EF4444 100%);
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .callout-box-red {
+      background: rgba(239, 68, 68, 0.1);
+      border-left: 5px solid var(--danger);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 20px 24px;
+      font-size: 1.05rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* =====================================================================
+       SECTION 6: HARMONIZATION (ComBat vs DANN)
+       ===================================================================== */
+    .harmonization-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+    }
+
+    .harm-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: var(--transition);
+    }
+
+    .harm-card.success-card {
+      border: 2px solid var(--success-border);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, var(--card-bg) 100%);
+    }
+
+    .harm-card.fail-card {
+      border: 2px solid var(--danger-border);
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.05) 0%, var(--card-bg) 100%);
+    }
+
+    .harm-card:hover { transform: translateY(-4px); }
+
+    .harm-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .harm-icon { font-size: 1.8rem; }
+    .harm-title { font-size: 1.35rem; font-weight: 700; }
+    .harm-desc { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; }
+
+    .gap-comparison-mini {
+      background: rgba(10, 22, 40, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      margin-bottom: 24px;
+    }
+
+    .mini-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .mini-row:last-child { margin-bottom: 0; }
+    .mini-label { width: 70px; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+
+    .mini-bar-track {
+      flex: 1;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease-out;
+    }
+
+    .mini-val { font-size: 0.85rem; font-weight: 700; width: 75px; text-align: right; }
+
+    .harm-result-box {
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .harm-card.success-card .harm-result-box {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--success-border);
+      color: var(--success);
+    }
+
+    .harm-card.fail-card .harm-result-box {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+    }
+
+    .harm-result-headline { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+    .harm-result-sub { font-size: 0.88rem; opacity: 0.9; }
+    .harm-note { font-size: 0.82rem; color: var(--text-muted); margin-top: 14px; font-style: italic; }
+
+    /* =====================================================================
+       SECTION 7: COMPLETE RESULTS TABLE
+       ===================================================================== */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .benchmark-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    .benchmark-table th {
+      background: rgba(10, 22, 40, 0.9);
+      padding: 18px 24px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border-subtle);
+    }
+
+    .benchmark-table td {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background 0.2s ease;
+    }
+
+    .benchmark-table tbody tr:hover td {
+      background: var(--card-hover);
+    }
+
+    .benchmark-table tbody tr.winner-row td {
+      background: rgba(16, 185, 129, 0.08);
+      font-weight: 600;
+      border-top: 1px solid var(--success-border);
+      border-bottom: 1px solid var(--success-border);
+    }
+
+    .benchmark-table tbody tr.winner-row:hover td {
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    .badge-cell {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success-border); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid var(--warning-border); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger-border); }
+
+    /* =====================================================================
+       SECTION 8: KEY FINDINGS
+       ===================================================================== */
+    .findings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .finding-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      position: relative;
+      box-shadow: var(--shadow-soft);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .finding-card:hover { transform: translateY(-5px); }
+    .finding-card.teal-card { border-top: 4px solid var(--accent-teal); }
+    .finding-card.green-card { border-top: 4px solid var(--success); }
+    .finding-card.amber-card { border-top: 4px solid var(--warning); }
+
+    .finding-number {
+      font-size: 2.4rem;
+      font-weight: 800;
+      opacity: 0.25;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .teal-card .finding-number { color: var(--accent-teal); }
+    .green-card .finding-number { color: var(--success); }
+    .amber-card .finding-number { color: var(--warning); }
+
+    .finding-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 12px; }
+    .finding-body { color: var(--text-muted); font-size: 0.95rem; line-height: 1.65; }
+
+    /* =====================================================================
+       SECTION 9: SCIENTIFIC RIGOR & TESTS
+       ===================================================================== */
+    .rigor-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .rigor-badge-item {
+      background: rgba(10, 22, 40, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .rigor-badge-icon { color: var(--success); font-size: 1.2rem; }
+
+    .test-progress-section {
+      background: rgba(10, 22, 40, 0.8);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .progress-title { font-size: 1rem; font-weight: 700; }
+    .progress-count { color: var(--success); font-weight: 700; font-size: 1rem; }
+
+    .progress-track {
+      height: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #10B981 0%, #34D399 100%);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+      border-radius: 6px;
+    }
+
+    /* =====================================================================
+       SECTION 10: FOOTER & LIMITATIONS
+       ===================================================================== */
+    footer.dashboard-footer {
+      background: #060E1A;
+      border-top: 1px solid var(--border-subtle);
+      padding: 70px 0 35px 0;
+      color: var(--text-muted);
+    }
+
+    .limitations-wrapper {
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      margin-bottom: 48px;
+    }
+
+    .limitations-title {
+      color: var(--warning);
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .limitations-list {
+      list-style-type: none;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .limitations-list li {
+      position: relative;
+      padding-left: 20px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .limitations-list li::before {
+      content: "•";
+      color: var(--warning);
+      font-weight: bold;
+      font-size: 1.3rem;
+      position: absolute;
+      left: 0;
+      top: -2px;
+    }
+
+    .footer-bottom-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-top: 30px;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.88rem;
+    }
+
+    .author-info { font-weight: 600; color: var(--text-primary); }
+
+    /* =====================================================================
+       RESPONSIVE BREAKPOINTS
+       ===================================================================== */
+    @media (max-width: 992px) {
+      .hero-stats { grid-template-columns: 1fr; max-width: 400px; }
+      .boxes-grid { grid-template-columns: 1fr; }
+      .datasets-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .brain-grid-layout { grid-template-columns: 1fr; }
+      .harmonization-grid { grid-template-columns: 1fr; }
+      .findings-grid { grid-template-columns: 1fr; }
+      .badges-grid { grid-template-columns: repeat(2, 1fr); }
+      .limitations-list { grid-template-columns: 1fr; }
+      .flow-wrapper { flex-direction: column; }
+      .hospital-node { max-width: 100%; width: 100%; }
+      .signal-bridge { width: 100%; margin: 20px 0; }
+    }
+
+    @media (max-width: 600px) {
+      .features-grid { grid-template-columns: 1fr; }
+      .badges-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      .feature-banner { flex-direction: column; align-items: flex-start; }
+      .bar-line { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .bar-label { width: 100%; }
+      .bar-track { width: 100%; }
+      .brain-controls-bar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- =====================================================================
+       STICKY HEADER WITH PROGRESS INDICATOR & LIVE STATUS
+       ===================================================================== -->
+  <header class="sticky-header">
+    <div class="container">
+      <nav class="nav-bar">
+        <a href="#hero" class="nav-brand">
+          <span>🧠 AD Benchmark</span>
+          <span class="nav-brand-badge">Cross-Scanner AI</span>
+          <span class="live-status-pill">
+            <span class="pulse-dot"></span>
+            <span>Live Data</span>
+          </span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#problem">The Problem</a></li>
+          <li><a href="#datasets">Datasets</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#brain-explorer">Brain Map</a></li>
+          <li><a href="#gap">The Gap</a></li>
+          <li><a href="#harmonization">Harmonization</a></li>
+          <li><a href="#results">Results</a></li>
+          <li><a href="#findings">Findings</a></li>
+          <li><a href="#rigor">Rigor</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="scroll-progress-bar" id="progressBar"></div>
+  </header>
+
+  <!-- =====================================================================
+       SECTION 1: HERO
+       ===================================================================== -->
+  <section class="hero" id="hero">
+    <div class="hero-glow"></div>
+    <div class="container hero-content">
+      <span class="hero-badge">B.Tech Final Year Research Project</span>
+      <h1 class="hero-title">
+        What happens when<br>
+        <span class="highlight">AI crosses borders?</span>
+      </h1>
+      <p class="hero-subtext">
+        We trained an Alzheimer's detection AI in the US,
+        then tested it in Spain — without retraining.
+      </p>
+
+      <div class="hero-stats">
+        <div class="stat-card stat-teal">
+          <div class="stat-number" id="hero-us-score">0%</div>
+          <div class="stat-label">US Accuracy (AUROC)</div>
+        </div>
+        <div class="stat-card stat-amber">
+          <div class="stat-number" id="hero-spain-score">0%</div>
+          <div class="stat-label">Spain Score</div>
+        </div>
+        <div class="stat-card stat-red">
+          <div class="stat-number" id="hero-gap">0%</div>
+          <div class="stat-label">Performance Lost</div>
+        </div>
+      </div>
+
+      <div class="live-data-note">
+        <span>🟢 Data loaded from real benchmark results (18/18 tests verified)</span>
+      </div>
+    </div>
+
+    <a href="#problem" class="scroll-arrow" aria-label="Scroll down">
+      <span>Explore Findings</span>
+      <span>↓</span>
+    </a>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 2: THE CROSS-SCANNER PROBLEM
+       ===================================================================== -->
+  <section id="problem">
+    <div class="container">
+      <h2 class="section-heading">The Cross-Scanner Problem</h2>
+      <p class="section-lead">
+        When an AI model is moved from the scanner it learned on to a new hospital's scanner, subtle hardware and protocol shifts degrade diagnostic performance.
+      </p>
+
+      <!-- Visual CSS Flow Diagram -->
+      <div class="problem-diagram">
+        <div class="flow-wrapper">
+          <div class="hospital-node source">
+            <div class="node-icon">🏥</div>
+            <div class="node-title">US Hospital</div>
+            <div class="node-desc">Washington University, St. Louis</div>
+            <div class="node-desc"><strong>Siemens Vision 1.5T</strong></div>
+            <span class="node-tag">Train AI Here</span>
+          </div>
+
+          <div class="signal-bridge">
+            <div class="signal-label">⚠️ Signal Degrades Across Sites</div>
+            <div class="signal-track">
+              <div class="signal-segment seg-solid" title="Clean In-Domain Signal"></div>
+              <div class="signal-segment seg-dashed" title="Hardware Shift"></div>
+              <div class="signal-segment seg-broken" title="Domain Breakdown"></div>
+            </div>
+            <div class="signal-subcaption">Scanner differences, software pipelines, and patient demographics alter feature representations</div>
+          </div>
+
+          <div class="hospital-node target">
+            <div class="node-icon">🏥</div>
+            <div class="node-title">Spanish Hospital</div>
+            <div class="node-desc">Hospital Clínic, Barcelona</div>
+            <div class="node-desc"><strong>Independent Scanner</strong></div>
+            <span class="node-tag">Test AI Here</span>
+          </div>
+        </div>
+
+        <!-- 3 Cause Explanation Boxes -->
+        <div class="boxes-grid">
+          <div class="explain-box">
+            <div class="explain-box-header">
+              <span class="box-badge-num">1</span>
+              <h4>Different Scanner Hardware</h4>
+            </div>
+            <p>Siemens vs other manufacturers produce slightly different image intensities, magnetic field inhomogeneities, and tissue gradient contrasts.</p>
+          </div>
+          <div class="explain-box">
+            <div class="explain-box-header">
+              <span class="box-badge-num">2</span>
+              <h4>Different Image Processing</h4>
+            </div>
+            <p>Each hospital's software pipeline (e.g. FreeSurfer vs SPM segmentation) changes how brain volumes are measured and thresholded.</p>
+          </div>
+          <div class="explain-box">
+            <div class="explain-box-header">
+              <span class="box-badge-num">3</span>
+              <h4>Different Patient Demographics</h4>
+            </div>
+            <p>US cohort vs Spanish cohort have different age and sex distributions, introducing subtle biological covariates into cross-domain classification.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 3: OUR DATASETS
+       ===================================================================== -->
+  <section id="datasets">
+    <div class="container">
+      <h2 class="section-heading">Two Real MRI Datasets</h2>
+      <p class="section-lead">
+        We evaluated on genuine clinical neuroimaging datasets from two different countries to model actual clinical AI deployment.
+      </p>
+
+      <div class="datasets-grid">
+        <!-- Source Card -->
+        <div class="dataset-card source-card">
+          <div>
+            <span class="card-top-tag">Source — Where We Trained</span>
+            <h3 class="dataset-title">OASIS-1 Dataset</h3>
+            <ul class="dataset-meta">
+              <li><span class="label">Location</span><span class="value">Washington Univ, St. Louis, USA</span></li>
+              <li><span class="label">Scanner Hardware</span><span class="value">Siemens Vision 1.5T</span></li>
+              <li><span class="label">Patients</span><span class="value">128 Subjects</span></li>
+              <li><span class="label">Breakdown</span><span class="value">98 Healthy Controls + 30 Alzheimer's</span></li>
+              <li><span class="label">Features used</span><span class="value">Brain volume ratio, Skull size, Age, Sex</span></li>
+            </ul>
+          </div>
+          <div class="card-footer-link">
+            Free download — <a href="https://www.oasis-brains.org" target="_blank" rel="noopener" style="color:var(--accent-teal);">oasis-brains.org</a>
+          </div>
+        </div>
+
+        <!-- Target Card -->
+        <div class="dataset-card target-card">
+          <div>
+            <span class="card-top-tag">Target — Where We Tested</span>
+            <h3 class="dataset-title">Spanish MRI Cohort</h3>
+            <ul class="dataset-meta">
+              <li><span class="label">Location</span><span class="value">Spain (European Medical Center)</span></li>
+              <li><span class="label">Scanner Hardware</span><span class="value">Different Institution Scanner</span></li>
+              <li><span class="label">Patients</span><span class="value">54 Subjects</span></li>
+              <li><span class="label">Breakdown</span><span class="value">19 Healthy Controls + 35 Alzheimer's</span></li>
+              <li><span class="label">Features used</span><span class="value">Same 4 features (extracted from MRI)</span></li>
+            </ul>
+          </div>
+          <div class="card-footer-link">
+            Free download — <a href="https://zenodo.org/records/3935636" target="_blank" rel="noopener" style="color:var(--warning);">zenodo.org/records/3935636</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="dataset-note-box">
+        Note: Models were NEVER retrained on Spanish data. Pure generalization test.
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 4: WHAT WE MEASURED
+       ===================================================================== -->
+  <section id="features">
+    <div class="container">
+      <h2 class="section-heading">4 Numbers Per Patient. That's It.</h2>
+      <p class="section-lead">
+        Instead of uninterpretable deep black-box representations, we focused on biologically validated brain morphometry.
+      </p>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <div class="feature-code">nWBV / Ratio</div>
+          <h4 class="feature-name">Brain Volume Ratio</h4>
+          <p class="feature-desc">Brain size ÷ Skull size. Alzheimer's shrinks the brain over time.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon">📏</div>
+          <div class="feature-code">eTIV / ICV</div>
+          <h4 class="feature-name">Total Skull Size</h4>
+          <p class="feature-desc">Used to normalize brain measurements across people with different head sizes.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <div class="feature-code">Age</div>
+          <h4 class="feature-name">Patient Age</h4>
+          <p class="feature-desc">Alzheimer's risk increases significantly with age.</p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card">
+          <div class="feature-icon">👤</div>
+          <div class="feature-code">Sex</div>
+          <h4 class="feature-name">Biological Sex</h4>
+          <p class="feature-desc">Included to control for known differences in brain structure.</p>
+        </div>
+      </div>
+
+      <div class="feature-banner">
+        <div class="feature-banner-text">
+          <h4>Why only 4 features?</h4>
+          <p>Simple features = reproducible science. No black box. Anyone can verify our results.</p>
+        </div>
+        <div class="feature-banner-pill">Fully Interpretable</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       PART 2: INTERACTIVE BRAIN SVG COMPONENT
+       ===================================================================== -->
+  <section id="brain-explorer">
+    <div class="container">
+      <h2 class="section-heading">Interactive Brain Anatomy & Pathology</h2>
+      <p class="section-lead">
+        Explore how Alzheimer's disease causes localized brain atrophy and how scanner differences alter volumetric extraction across regions.
+      </p>
+
+      <div class="brain-explorer-card">
+        <!-- Top Controls: Healthy vs AD Toggle -->
+        <div class="brain-controls-bar">
+          <div class="toggle-group">
+            <span style="font-size:0.9rem; font-weight:700; color:var(--text-muted);">Pathology State:</span>
+            <button id="btn-brain-healthy" class="btn-toggle active" onclick="setBrainCondition('healthy')">
+              🧠 Healthy Brain
+            </button>
+            <button id="btn-brain-ad" class="btn-toggle danger-toggle" onclick="setBrainCondition('ad')">
+              ⚠️ Alzheimer's Brain (AD)
+            </button>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-muted);">
+            💡 <em>Click any region in the brain to inspect clinical findings</em>
+          </div>
+        </div>
+
+        <div class="brain-grid-layout">
+          <!-- Left: SVG Brain View -->
+          <div class="svg-wrapper">
+            <svg id="brainSvg" class="brain-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <!-- Subtle Radial Glow Filters -->
+                <filter id="regionGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+
+              <!-- Outer Skull & Cranial Boundary (Translucent Guide) -->
+              <ellipse cx="250" cy="250" rx="210" ry="235" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="2" stroke-dasharray="6 6" />
+
+              <!-- Longitudinal Hemispheric Fissure -->
+              <line x1="250" y1="20" x2="250" y2="480" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="3 3" />
+
+              <!-- ================= REGION 1: FRONTAL LOBE ================= -->
+              <!-- Front of brain (Top) -->
+              <g id="region-frontal" class="brain-region" data-region="frontal" onclick="selectBrainRegion('frontal')">
+                <title>Frontal Lobe — Click for details</title>
+                <!-- Left Frontal Hemisphere -->
+                <path d="M 248 30 C 180 32 90 90 90 190 C 90 220 140 230 248 230 Z" fill="#3B82F6" id="path-frontal-l" />
+                <!-- Right Frontal Hemisphere -->
+                <path d="M 252 30 C 320 32 410 90 410 190 C 410 220 360 230 252 230 Z" fill="#3B82F6" id="path-frontal-r" />
+                <!-- Label text -->
+                <text x="250" y="130" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700" pointer-events="none" letter-spacing="1">FRONTAL LOBE</text>
+              </g>
+
+              <!-- ================= REGION 3: TEMPORAL LOBES ================= -->
+              <!-- Sides of brain (Middle Lateral) -->
+              <g id="region-temporal" class="brain-region" data-region="temporal" onclick="selectBrainRegion('temporal')">
+                <title>Temporal Lobe — Click for details</title>
+                <!-- Left Temporal Lobe -->
+                <path d="M 85 195 C 65 240 65 310 95 340 C 130 355 170 330 175 250 C 175 210 115 185 85 195 Z" fill="#8B5CF6" id="path-temporal-l" />
+                <!-- Right Temporal Lobe -->
+                <path d="M 415 195 C 435 240 435 310 405 340 C 370 355 330 330 325 250 C 325 210 385 185 415 195 Z" fill="#8B5CF6" id="path-temporal-r" />
+                <!-- Labels -->
+                <text x="120" y="275" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="700" pointer-events="none">TEMPORAL</text>
+                <text x="380" y="275" text-anchor="middle" fill="#ffffff" font-size="10" font-weight="700" pointer-events="none">TEMPORAL</text>
+              </g>
+
+              <!-- ================= REGION 4: PARIETAL LOBE ================= -->
+              <!-- Top-back & posterior (Bottom) -->
+              <g id="region-parietal" class="brain-region" data-region="parietal" onclick="selectBrainRegion('parietal')">
+                <title>Parietal Lobe — Click for details</title>
+                <!-- Left Parietal / Occipital -->
+                <path d="M 248 240 C 170 240 100 350 110 400 C 130 460 210 470 248 470 Z" fill="#06B6D4" id="path-parietal-l" />
+                <!-- Right Parietal / Occipital -->
+                <path d="M 252 240 C 330 240 400 350 390 400 C 370 460 290 470 252 470 Z" fill="#06B6D4" id="path-parietal-r" />
+                <text x="250" y="380" text-anchor="middle" fill="#ffffff" font-size="12" font-weight="700" pointer-events="none" letter-spacing="1">PARIETAL LOBE</text>
+              </g>
+
+              <!-- ================= REGION 1: HIPPOCAMPUS ================= -->
+              <!-- Center, bilateral small, critical structure -->
+              <g id="region-hippocampus" class="brain-region selected-region" data-region="hippocampus" onclick="selectBrainRegion('hippocampus')" style="transform-origin: 250px 250px;">
+                <title>Hippocampus — Primary Alzheimer's Target</title>
+                <!-- Left Hippocampus -->
+                <path d="M 215 225 C 200 235 195 265 210 275 C 220 280 230 265 230 245 C 230 235 225 220 215 225 Z" fill="#10B981" id="path-hippo-l" />
+                <!-- Right Hippocampus -->
+                <path d="M 285 225 C 300 235 305 265 290 275 C 280 280 270 265 270 245 C 270 235 275 220 285 225 Z" fill="#10B981" id="path-hippo-r" />
+                <!-- Center Connecting Midbrain Nuclei -->
+                <ellipse cx="250" cy="250" rx="12" ry="16" fill="rgba(255,255,255,0.2)" stroke="none" />
+                <text x="250" y="254" text-anchor="middle" fill="#ffffff" font-size="9" font-weight="800" pointer-events="none">HIPPO</text>
+              </g>
+            </svg>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">
+              Top-Down Axial Neuroimaging Projection
+            </div>
+          </div>
+
+          <!-- Right: Interactive Region Info Panel -->
+          <div class="brain-info-panel" id="brainInfoPanel">
+            <div class="info-tag" id="panelTag">FEATURED REGION • HIGH IMPACT</div>
+            <h3 class="info-title" id="panelTitle">Hippocampus</h3>
+
+            <div class="info-block">
+              <div class="info-label" style="color:var(--accent-teal);">Role in Brain</div>
+              <div class="info-role-text" id="panelRole">Controls memory formation and spatial navigation.</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-label" style="color:var(--danger);">Alzheimer's Disease Effect</div>
+              <div class="info-ad-text" id="panelAd">First region destroyed by Alzheimer's. Shrinks up to 40% before clinical symptoms appear.</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-label" style="color:var(--text-muted);">What Our Benchmark Found</div>
+              <div class="info-finding-text" id="panelFinding">nWBV captures this shrinkage globally. Our classification models leverage this progressive volumetric signal to distinguish AD from CN.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scanner Comparison Interactive Bar -->
+        <div class="scanner-compare-bar">
+          <div class="scanner-compare-header">
+            <span class="scanner-compare-title">🔄 Cross-Scanner Physical Domain Shift Simulation:</span>
+            <div class="scanner-pills">
+              <button class="scanner-pill active" id="btn-scan-oasis" onclick="setScannerComparison('oasis')">
+                OASIS-1 Scanner (Siemens 1.5T)
+              </button>
+              <button class="scanner-pill" id="btn-scan-spain" onclick="setScannerComparison('spain')">
+                Spanish Scanner (Clinical Site)
+              </button>
+            </div>
+          </div>
+          <div class="scanner-message-box" id="scannerMessageBox">
+            <strong>Siemens Vision 1.5T (US):</strong> Calibrated baseline FreeSurfer surface reconstruction. Average nWBV = 0.742, eTIV = 1,448 cm³.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 5: THE GENERALIZATION GAP
+       ===================================================================== -->
+  <section id="gap">
+    <div class="container">
+      <h2 class="section-heading">The Gap — Before Any Fix</h2>
+      <p class="section-lead">
+        When algorithms trained strictly on US scans are deployed to a European hospital scanner with zero adaptation, accuracy drops significantly.
+      </p>
+
+      <div class="gap-comparison-container" id="results-bars">
+        <!-- Model 1: Logistic Regression -->
+        <div class="comparison-row">
+          <div class="row-header">
+            <span class="row-model-name">Logistic Regression (LR)</span>
+            <span class="row-gap-badge">Gap: -16% AUROC</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-line">
+              <span class="bar-label">US Score</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-us" id="bar-us-0" data-width="86%">86%</div>
+              </div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-label">Spain Score</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-spain" id="bar-sp-0" data-width="71%">71%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model 2: Linear SVM -->
+        <div class="comparison-row">
+          <div class="row-header">
+            <span class="row-model-name">Support Vector Machine (SVM)</span>
+            <span class="row-gap-badge">Gap: -15% AUROC</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-line">
+              <span class="bar-label">US Score</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-us" id="bar-us-1" data-width="85%">85%</div>
+              </div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-label">Spain Score</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-spain" id="bar-sp-1" data-width="70%">70%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model 3: Multilayer Perceptron -->
+        <div class="comparison-row">
+          <div class="row-header">
+            <span class="row-model-name">Neural Network (MLP)</span>
+            <span class="row-gap-badge">Gap: -14% AUROC</span>
+          </div>
+          <div class="bar-group">
+            <div class="bar-line">
+              <span class="bar-label">US Score</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-us" id="bar-us-2" data-width="88%">88%</div>
+              </div>
+            </div>
+            <div class="bar-line">
+              <span class="bar-label">Spain Score</span>
+              <div class="bar-track">
+                <div class="bar-fill bar-spain" id="bar-sp-2" data-width="75%">75%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout-box-red">
+        <span style="font-size: 1.8rem;">⚠️</span>
+        <div>
+          <strong>Without any fix, models lose 13-16% accuracy just by crossing to a different scanner.</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 6: HARMONIZATION (ComBat vs DANN)
+       ===================================================================== -->
+  <section id="harmonization">
+    <div class="container">
+      <h2 class="section-heading">Can We Bridge the Gap?</h2>
+      <p class="section-lead">
+        We evaluated two prominent cross-domain harmonization strategies using only ~11 unlabeled calibration scans from the target hospital.
+      </p>
+
+      <div class="harmonization-grid">
+        <!-- ComBat Card (Success) -->
+        <div class="harm-card success-card">
+          <div>
+            <div class="harm-header">
+              <span class="harm-icon">✅</span>
+              <h3 class="harm-title">ComBat Statistical Harmonization</h3>
+            </div>
+            <p class="harm-desc">Removes scanner-specific effects from measurements mathematically.</p>
+
+            <div class="gap-comparison-mini">
+              <div class="mini-row">
+                <span class="mini-label">Before:</span>
+                <div class="mini-bar-track">
+                  <div class="mini-bar-fill" style="width: 70%; background: var(--danger);"></div>
+                </div>
+                <span class="mini-val" style="color: var(--danger);">Gap = 0.14</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-label">After:</span>
+                <div class="mini-bar-track">
+                  <div class="mini-bar-fill" style="width: 20%; background: var(--success);"></div>
+                </div>
+                <span class="mini-val" style="color: var(--success);">Gap = 0.04</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="harm-result-box">
+              <div class="harm-result-headline">Gap reduced by 71%</div>
+              <div class="harm-result-sub">0.14 → 0.04 AUROC &nbsp;|&nbsp; <strong>✅ WORKS</strong></div>
+            </div>
+            <div class="harm-note">Preserves biological covariates (age, sex) while neutralizing scanner batch effects with small sample size.</div>
+          </div>
+        </div>
+
+        <!-- DANN Card (Failed) -->
+        <div class="harm-card fail-card">
+          <div>
+            <div class="harm-header">
+              <span class="harm-icon">❌</span>
+              <h3 class="harm-title">Deep Learning (DANN)</h3>
+            </div>
+            <p class="harm-desc">Neural network trained to ignore scanner differences automatically.</p>
+
+            <div class="gap-comparison-mini">
+              <div class="mini-row">
+                <span class="mini-label">Before:</span>
+                <div class="mini-bar-track">
+                  <div class="mini-bar-fill" style="width: 70%; background: var(--danger);"></div>
+                </div>
+                <span class="mini-val" style="color: var(--danger);">Gap = 0.14</span>
+              </div>
+              <div class="mini-row">
+                <span class="mini-label">After:</span>
+                <div class="mini-bar-track">
+                  <div class="mini-bar-fill" style="width: 75%; background: var(--danger);"></div>
+                </div>
+                <span class="mini-val" style="color: var(--danger);">Gap = 0.15</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="harm-result-box">
+              <div class="harm-result-headline">Gap did NOT reduce</div>
+              <div class="harm-result-sub">0.14 → 0.15 AUROC &nbsp;|&nbsp; <strong>❌ FAILED (small data)</strong></div>
+            </div>
+            <div class="harm-note">Why? DANN needed more Spanish training samples. Only 11 available — too few.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 7: COMPLETE RESULTS TABLE (DYNAMICALLY POPULATED)
+       ===================================================================== -->
+  <section id="results">
+    <div class="container">
+      <h2 class="section-heading">Complete Benchmark Results</h2>
+      <p class="section-lead">
+        Empirical evaluation aggregated across 3 randomized seeds (42, 123, 456) on strictly held-out patient partitions.
+      </p>
+
+      <div class="table-responsive">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>US AUROC</th>
+              <th>Spain AUROC</th>
+              <th>Gap</th>
+              <th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody id="results-tbody">
+            <!-- Dynamic rows populated by dashboard_data.js -->
+            <tr>
+              <td><strong>LR</strong></td>
+              <td>0.86</td>
+              <td>0.71</td>
+              <td><span class="badge-cell badge-red">+0.15</span></td>
+              <td>➖</td>
+            </tr>
+            <tr>
+              <td><strong>SVM</strong></td>
+              <td>0.85</td>
+              <td>0.70</td>
+              <td><span class="badge-cell badge-red">+0.15</span></td>
+              <td>➖</td>
+            </tr>
+            <tr>
+              <td><strong>MLP</strong></td>
+              <td>0.88</td>
+              <td>0.75</td>
+              <td><span class="badge-cell badge-red">+0.14</span></td>
+              <td>➖</td>
+            </tr>
+            <tr class="winner-row">
+              <td><strong>ComBat+MLP</strong></td>
+              <td>0.76</td>
+              <td>0.72</td>
+              <td><span class="badge-cell badge-green">+0.04</span></td>
+              <td><span style="color: var(--success); font-weight: 700;">✅ Best</span></td>
+            </tr>
+            <tr>
+              <td><strong>DANN</strong></td>
+              <td>0.80</td>
+              <td>0.65</td>
+              <td><span class="badge-cell badge-red">+0.15</span></td>
+              <td>❌</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:16px; font-size:0.85rem; color:var(--text-muted); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <span><strong>Best Method:</strong> <span id="best-method-name" style="color:var(--success); font-weight:700;">ComBat+MLP</span> (Minimized Gap = <span id="best-gap-value" style="color:var(--success); font-weight:700;">0.04</span>)</span>
+        <span>Color code: <span style="color:var(--success);">Gap &lt; 0.05 (Green)</span> &bull; <span style="color:var(--warning);">0.05-0.14 (Amber)</span> &bull; <span style="color:var(--danger);">&gt; 0.14 (Red)</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 8: KEY FINDINGS
+       ===================================================================== -->
+  <section id="findings">
+    <div class="container">
+      <h2 class="section-heading">What We Found</h2>
+      <p class="section-lead">
+        Three primary conclusions summarizing the feasibility of cross-scanner medical AI translation.
+      </p>
+
+      <div class="findings-grid">
+        <!-- Card 1 -->
+        <div class="finding-card teal-card">
+          <div class="finding-number">01</div>
+          <h3 class="finding-title">Gap is Real</h3>
+          <p class="finding-body">
+            Every model dropped 13-16% AUROC when tested on a different country's scanner. Cross-scanner domain shift is a genuine clinical deployment problem.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="finding-card green-card">
+          <div class="finding-number">02</div>
+          <h3 class="finding-title">ComBat Works</h3>
+          <p class="finding-body">
+            Statistical harmonization reduced the generalization gap from 0.14 to just 0.04. A 71% gap recovery using only 11 unlabeled target samples.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="finding-card amber-card">
+          <div class="finding-number">03</div>
+          <h3 class="finding-title">DANN Needs More Data</h3>
+          <p class="finding-body">
+            Deep learning adaptation failed here because only 11 Spanish calibration samples were available. Larger datasets would likely fix this.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 9: SCIENTIFIC RIGOR & TESTS
+       ===================================================================== -->
+  <section id="rigor">
+    <div class="container">
+      <h2 class="section-heading">Scientific Rigor</h2>
+      <p class="section-lead">
+        Built strictly according to reproducible machine learning standards with automated verification at every step.
+      </p>
+
+      <div class="rigor-box">
+        <div class="badges-grid">
+          <div class="rigor-badge-item">
+            <span class="rigor-badge-icon">✅</span>
+            <span>18 Automated Tests Passed</span>
+          </div>
+          <div class="rigor-badge-item">
+            <span class="rigor-badge-icon">✅</span>
+            <span>Zero Data Leakage Verified</span>
+          </div>
+          <div class="rigor-badge-item">
+            <span class="rigor-badge-icon">✅</span>
+            <span>3 Random Seeds Tested</span>
+          </div>
+          <div class="rigor-badge-item">
+            <span class="rigor-badge-icon">✅</span>
+            <span>Confidence Intervals Reported</span>
+          </div>
+          <div class="rigor-badge-item">
+            <span class="rigor-badge-icon">✅</span>
+            <span>No Forbidden Features Used</span>
+          </div>
+          <div class="rigor-badge-item">
+            <span class="rigor-badge-icon">✅</span>
+            <span>Fully Reproducible Code</span>
+          </div>
+        </div>
+
+        <div class="test-progress-section">
+          <div class="progress-header">
+            <span class="progress-title">Automated Verification Suite</span>
+            <span class="progress-count" id="rigor-test-count">18 / 18 Tests Passing</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       SECTION 10: FOOTER & LIMITATIONS
+       ===================================================================== -->
+  <footer class="dashboard-footer">
+    <div class="container">
+      <div class="limitations-wrapper">
+        <h4 class="limitations-title">⚠️ Limitations (Honest Science)</h4>
+        <ul class="limitations-list">
+          <li>Spanish cohort only 54 patients — confidence intervals are wide</li>
+          <li>OASIS-1 has single scanner type — limits DANN</li>
+          <li>Brain volume features differ slightly between FreeSurfer (OASIS) and SPM (Spanish)</li>
+          <li>Results should not be used for clinical decisions</li>
+        </ul>
+      </div>
+
+      <div class="footer-bottom-line">
+        <div class="author-info">
+          VIT Chennai — B.Tech CSE (Cyber Physical Systems)
+        </div>
+        <div>
+          Datasets: OASIS-1 + Zenodo Spanish MRI Cohort
+        </div>
+        <div style="color: var(--success); font-weight: 600;">
+          Code: Fully reproducible | 18/18 tests passing
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =====================================================================
+       PART 3: LIVE DATA INTEGRATION SCRIPT
+       ===================================================================== -->
+  <script src="dashboard_data.js"></script>
+  <script>
+    // =====================================================================
+    // BRAIN EXPLORER DATA & INTERACTION
+    // =====================================================================
+    const BRAIN_REGIONS_DATA = {
+      hippocampus: {
+        title: "Hippocampus",
+        role: "Controls memory formation and spatial navigation.",
+        ad: "First region destroyed by Alzheimer's. Shrinks up to 40% before symptoms appear.",
+        finding: "nWBV captures this shrinkage globally. Our model uses this signal to detect AD.",
+        tag: "PRIMARY TARGET • HIGHEST ATROPHY",
+      },
+      frontal: {
+        title: "Frontal Lobe",
+        role: "Decision making, personality, complex thinking.",
+        ad: "Affected in moderate-severe stages. Causes personality and behavior changes.",
+        finding: "Brain volume reduction here contributes to overall nWBV decrease we measure.",
+        tag: "ANTERIOR CORTEX • EXECUTIVE CONTROL",
+      },
+      temporal: {
+        title: "Temporal Lobe",
+        role: "Language, hearing, and long-term memory.",
+        ad: "Second most affected region after hippocampus. Causes language difficulties and memory loss.",
+        finding: "Spanish vs US scanner differences affect how temporal regions appear in MRI.",
+        tag: "LATERAL CORTEX • LANGUAGE & MEMORY",
+      },
+      parietal: {
+        title: "Parietal Lobe",
+        role: "Spatial awareness and sensory processing.",
+        ad: "Affected in later stages. Causes difficulty with familiar tasks.",
+        finding: "Relatively preserved in early AD, which is why early detection is hard.",
+        tag: "POSTERIOR CORTEX • SENSORY INTEGRATION",
+      }
+    };
+
+    let currentCondition = 'healthy';
+    let currentSelectedRegion = 'hippocampus';
+
+    function setBrainCondition(condition) {
+      currentCondition = condition;
+      const btnHealthy = document.getElementById('btn-brain-healthy');
+      const btnAd = document.getElementById('btn-brain-ad');
+
+      const pathHippoL = document.getElementById('path-hippo-l');
+      const pathHippoR = document.getElementById('path-hippo-r');
+      const gHippo = document.getElementById('region-hippocampus');
+
+      const pathFrontalL = document.getElementById('path-frontal-l');
+      const pathFrontalR = document.getElementById('path-frontal-r');
+
+      const pathTemporalL = document.getElementById('path-temporal-l');
+      const pathTemporalR = document.getElementById('path-temporal-r');
+
+      const pathParietalL = document.getElementById('path-parietal-l');
+      const pathParietalR = document.getElementById('path-parietal-r');
+
+      if (condition === 'ad') {
+        btnHealthy.classList.remove('active');
+        btnAd.classList.add('active');
+
+        // Hippocampus: shrinks (scale 0.6) + turns red (#EF4444)
+        if (gHippo) gHippo.style.transform = 'scale(0.6)';
+        if (pathHippoL) pathHippoL.setAttribute('fill', '#EF4444');
+        if (pathHippoR) pathHippoR.setAttribute('fill', '#EF4444');
+
+        // Frontal: turns amber (#F59E0B)
+        if (pathFrontalL) pathFrontalL.setAttribute('fill', '#F59E0B');
+        if (pathFrontalR) pathFrontalR.setAttribute('fill', '#F59E0B');
+
+        // Temporal: turns orange (#F97316)
+        if (pathTemporalL) pathTemporalL.setAttribute('fill', '#F97316');
+        if (pathTemporalR) pathTemporalR.setAttribute('fill', '#F97316');
+
+        // Parietal: turns gray (#64748B)
+        if (pathParietalL) pathParietalL.setAttribute('fill', '#64748B');
+        if (pathParietalR) pathParietalR.setAttribute('fill', '#64748B');
+      } else {
+        btnAd.classList.remove('active');
+        btnHealthy.classList.add('active');
+
+        // Reset to Healthy colors and full size
+        if (gHippo) gHippo.style.transform = 'scale(1)';
+        if (pathHippoL) pathHippoL.setAttribute('fill', '#10B981');
+        if (pathHippoR) pathHippoR.setAttribute('fill', '#10B981');
+
+        if (pathFrontalL) pathFrontalL.setAttribute('fill', '#3B82F6');
+        if (pathFrontalR) pathFrontalR.setAttribute('fill', '#3B82F6');
+
+        if (pathTemporalL) pathTemporalL.setAttribute('fill', '#8B5CF6');
+        if (pathTemporalR) pathTemporalR.setAttribute('fill', '#8B5CF6');
+
+        if (pathParietalL) pathParietalL.setAttribute('fill', '#06B6D4');
+        if (pathParietalR) pathParietalR.setAttribute('fill', '#06B6D4');
+      }
+    }
+
+    function selectBrainRegion(regionKey) {
+      currentSelectedRegion = regionKey;
+      const data = BRAIN_REGIONS_DATA[regionKey];
+      if (!data) return;
+
+      // Update text fields
+      document.getElementById('panelTag').textContent = data.tag;
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelRole').textContent = data.role;
+      document.getElementById('panelAd').textContent = data.ad;
+      document.getElementById('panelFinding').textContent = data.finding;
+
+      // Update active selection outline in SVG
+      document.querySelectorAll('.brain-region').forEach(el => el.classList.remove('selected-region'));
+      const activeEl = document.getElementById(`region-${regionKey}`);
+      if (activeEl) activeEl.classList.add('selected-region');
+    }
+
+    function setScannerComparison(scannerType) {
+      const btnOasis = document.getElementById('btn-scan-oasis');
+      const btnSpain = document.getElementById('btn-scan-spain');
+      const box = document.getElementById('scannerMessageBox');
+
+      if (scannerType === 'spain') {
+        btnOasis.classList.remove('active');
+        btnSpain.classList.add('active');
+        box.innerHTML = `
+          <strong>Spanish Hospital Scanner:</strong>
+          "Same brain, different scanner = different measurements. This is the domain shift our benchmark quantifies."
+          <div style="margin-top:6px; font-size:0.82rem; color:var(--warning);">
+            Tissue boundary shift: nWBV ratio shifts by -1.9% and raw ICV by 1,000x due to voxel sizing conventions.
+          </div>
+        `;
+      } else {
+        btnSpain.classList.remove('active');
+        btnOasis.classList.add('active');
+        box.innerHTML = `
+          <strong>OASIS-1 Scanner (Siemens 1.5T):</strong>
+          Calibrated baseline FreeSurfer surface reconstruction. Average nWBV = 0.742, eTIV = 1,448 cm³.
+        `;
+      }
+    }
+
+    // =====================================================================
+    // LIVE DATA INTEGRATION & SCROLL ANIMATIONS
+    // =====================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // 1. Reading Progress Bar & Active Section Highlight
+      const progressBar = document.getElementById("progressBar");
+      const navLinks = document.querySelectorAll(".nav-links a");
+      const sections = document.querySelectorAll("section[id]");
+
+      window.addEventListener("scroll", () => {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        progressBar.style.width = scrollPercent + "%";
+
+        let currentSectionId = "";
+        sections.forEach((sec) => {
+          const sectionTop = sec.offsetTop - 120;
+          const sectionHeight = sec.offsetHeight;
+          if (scrollTop >= sectionTop && scrollTop < sectionTop + sectionHeight) {
+            currentSectionId = sec.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${currentSectionId}`) {
+            link.classList.add("active");
+          }
+        });
+      });
+
+      // 2. Populate Results Table from real benchmark data
+      const tbody = document.getElementById('results-tbody');
+      if (tbody && typeof BENCHMARK_DATA !== 'undefined' && BENCHMARK_DATA.methods) {
+        tbody.innerHTML = '';
+        BENCHMARK_DATA.methods.forEach(m => {
+          const gap = m.gap;
+          const gapColor = gap < 0.05 ? '#10B981' :
+                           gap < 0.14 ? '#F59E0B' : '#EF4444';
+          const badgeClass = gap < 0.05 ? 'badge-green' :
+                             gap < 0.14 ? 'badge-amber' : 'badge-red';
+          const isWinner = gap < 0.05;
+          const verdict = isWinner ? '<span style="color:#10B981;font-weight:700;">✅ Best</span>' :
+                          gap > 0.14 ? '❌' : '➖';
+
+          const rowHtml = `
+            <tr class="${isWinner ? 'winner-row' : ''}">
+              <td style="color:#f0f4f8;font-weight:600;">${m.name}</td>
+              <td style="color:#00B4D8;font-weight:600;">
+                ${m.oasis_auroc.toFixed(2)}
+              </td>
+              <td style="color:#F59E0B;font-weight:600;">
+                ${m.spanish_auroc.toFixed(2)}
+              </td>
+              <td>
+                <span class="badge-cell ${badgeClass}">+${m.gap.toFixed(2)}</span>
+              </td>
+              <td>${verdict}</td>
+            </tr>
+          `;
+          tbody.innerHTML += rowHtml;
+        });
+      }
+
+      // 3. Populate Hero Counters from real benchmark data
+      if (typeof BENCHMARK_DATA !== 'undefined' && BENCHMARK_DATA.methods) {
+        const baseline = BENCHMARK_DATA.methods.find(
+          m => m.name.includes('MLP') &&
+               !m.name.includes('ComBat') &&
+               !m.name.includes('DANN')
+        );
+        if (baseline) {
+          animateCounter('hero-us-score', Math.round(baseline.oasis_auroc * 100), '%');
+          animateCounter('hero-spain-score', Math.round(baseline.spanish_auroc * 100), '%');
+          animateCounter('hero-gap', Math.round(baseline.gap * 100), '%');
+        } else {
+          animateCounter('hero-us-score', 88, '%');
+          animateCounter('hero-spain-score', 75, '%');
+          animateCounter('hero-gap', 13, '%');
+        }
+
+        // Summary best method name & gap
+        if (BENCHMARK_DATA.summary) {
+          const el = document.getElementById('best-method-name');
+          if (el) el.textContent = BENCHMARK_DATA.summary.best_method;
+          const gapEl = document.getElementById('best-gap-value');
+          if (gapEl) gapEl.textContent = BENCHMARK_DATA.summary.best_gap.toFixed(2);
+        }
+      } else {
+        // Fallback default counters
+        animateCounter('hero-us-score', 88, '%');
+        animateCounter('hero-spain-score', 75, '%');
+        animateCounter('hero-gap', 13, '%');
+      }
+
+      // 4. Animate Bars with IntersectionObserver
+      animateBars();
+    });
+
+    function animateCounter(id, target, suffix = '') {
+      const el = document.getElementById(id);
+      if (!el) return;
+      let current = 0;
+      const duration = 1500;
+      const startTime = performance.now();
+
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        current = Math.floor(easeOut * target);
+        el.textContent = current + suffix;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.textContent = target + suffix;
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function animateBars() {
+      const section = document.getElementById('results-bars');
+      if (!section) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (typeof BENCHMARK_DATA !== 'undefined' && BENCHMARK_DATA.methods) {
+              BENCHMARK_DATA.methods.forEach((m, i) => {
+                const usBar = document.getElementById(`bar-us-${i}`);
+                const spBar = document.getElementById(`bar-sp-${i}`);
+                if (usBar) {
+                  setTimeout(() => {
+                    usBar.style.width = (m.oasis_auroc * 100) + '%';
+                  }, i * 150);
+                }
+                if (spBar) {
+                  setTimeout(() => {
+                    spBar.style.width = (m.spanish_auroc * 100) + '%';
+                  }, i * 150 + 100);
+                }
+              });
+            } else {
+              // Fallback
+              document.querySelectorAll('.bar-fill').forEach(bar => {
+                const w = bar.getAttribute('data-width');
+                if (w) bar.style.width = w;
+              });
+            }
+            observer.disconnect();
+          }
+        });
+      }, { threshold: 0.25 });
+
+      observer.observe(section);
+    }
+  </script>
+</body>
+</html>

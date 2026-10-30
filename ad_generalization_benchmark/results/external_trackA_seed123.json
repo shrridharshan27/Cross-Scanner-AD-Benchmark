@@ -1,0 +1,70 @@
+{
+  "seed": 123,
+  "spanish_n": 54,
+  "spanish_n_pos": 35,
+  "spanish_n_neg": 19,
+  "warning": "Spanish n=54, CIs will be wide \u2014 do not rank methods definitively",
+  "lr": {
+    "oasis_test_auroc": 0.9600000000000001,
+    "spanish_auroc": 0.7112781954887218,
+    "gap_auroc": 0.24872180451127823,
+    "ci_low": 0.5511010598596805,
+    "ci_high": 0.8478696741854637,
+    "frozen_threshold": 0.3364065632289264,
+    "balanced_accuracy": 0.5864661654135338,
+    "sensitivity": 0.8571428571428571,
+    "specificity": 0.3157894736842105,
+    "confusion_matrix": [
+      [
+        6,
+        13
+      ],
+      [
+        5,
+        30
+      ]
+    ]
+  },
+  "svm": {
+    "oasis_test_auroc": 0.9600000000000001,
+    "spanish_auroc": 0.7157894736842105,
+    "gap_auroc": 0.24421052631578954,
+    "ci_low": 0.5567167744044542,
+    "ci_high": 0.8522853535353534,
+    "frozen_threshold": 0.12835028038639776,
+    "balanced_accuracy": 0.6150375939849624,
+    "sensitivity": 0.9142857142857143,
+    "specificity": 0.3157894736842105,
+    "confusion_matrix": [
+      [
+        6,
+        13
+      ],
+      [
+        3,
+        32
+      ]
+    ]
+  },
+  "mlp": {
+    "oasis_test_auroc": 0.9466666666666668,
+    "spanish_auroc": 0.724812030075188,
+    "gap_auroc": 0.22185463659147875,
+    "ci_low": 0.5646859796550199,
+    "ci_high": 0.8518259479717812,
+    "frozen_threshold": 0.3842709958553314,
+    "balanced_accuracy": 0.5240601503759399,
+    "sensitivity": 0.9428571428571428,
+    "specificity": 0.10526315789473684,
+    "confusion_matrix": [
+      [
+        2,
+        17
+      ],
+      [
+        2,
+        33
+      ]
+    ]
+  }
+}

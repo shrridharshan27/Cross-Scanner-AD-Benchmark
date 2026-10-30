@@ -1,0 +1,12 @@
+datasets:
+  oasis1_xlsx: "C:/Project/ML Project/datasets/oasis_cross-sectional-5708aa0a98d82080.xlsx"
+  spanish_mri_zip: "C:/Project/ML Project/datasets/T1_preprocessed.zip"
+  spanish_clinical_zip: "C:/Project/ML Project/datasets/Clinical_data.zip"
+  adni_csv: "C:/Project/ML Project/datasets/idaSearch_10_28_2026 (1).csv"
+output:
+  splits_dir: "splits/saved/"
+  features_dir: "features/feature_cache/"
+  results_dir: "results/"
+  models_dir: "models/saved/"
+colab:
+  drive_mount: "/content/drive/MyDrive/ad_benchmark/"

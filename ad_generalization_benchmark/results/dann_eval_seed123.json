@@ -1,0 +1,51 @@
+{
+  "seed": 123,
+  "method": "DANN",
+  "threshold": 0.542461633682251,
+  "internal": {
+    "auroc": 0.8133333333333332,
+    "ci_low": 0.5238095238095238,
+    "ci_high": 1.0,
+    "balanced_accuracy": 0.6333333333333333,
+    "sensitivity": 1.0,
+    "specificity": 0.26666666666666666,
+    "confusion_matrix": [
+      [
+        4,
+        11
+      ],
+      [
+        0,
+        5
+      ]
+    ]
+  },
+  "external": {
+    "spanish_eval_n": 44,
+    "auroc": 0.5172413793103449,
+    "ci_low": 0.3359375,
+    "ci_high": 0.7098735119047619,
+    "balanced_accuracy": 0.5,
+    "sensitivity": 1.0,
+    "specificity": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        15
+      ],
+      [
+        0,
+        29
+      ]
+    ]
+  },
+  "generalization_gap": 0.2960919540229884,
+  "unadapted_baseline_sp_auroc": 0.724812030075188,
+  "adaptation_improvement": -0.20757065076484316,
+  "training_info": {
+    "lr": 0.001,
+    "best_epoch": 2,
+    "pos_weight": 3.238095238095238,
+    "final_alpha": 0.5005202111902354
+  }
+}

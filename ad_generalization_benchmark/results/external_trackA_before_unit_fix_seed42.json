@@ -1,0 +1,70 @@
+{
+  "seed": 42,
+  "spanish_n": 54,
+  "spanish_n_pos": 35,
+  "spanish_n_neg": 19,
+  "warning": "Spanish n=54, CIs will be wide \u2014 do not rank methods definitively",
+  "lr": {
+    "oasis_test_auroc": 0.8666666666666667,
+    "spanish_auroc": 0.5,
+    "gap_auroc": 0.3666666666666667,
+    "ci_low": 0.5,
+    "ci_high": 0.5,
+    "frozen_threshold": 0.5380285372827147,
+    "balanced_accuracy": 0.5,
+    "sensitivity": 1.0,
+    "specificity": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        19
+      ],
+      [
+        0,
+        35
+      ]
+    ]
+  },
+  "svm": {
+    "oasis_test_auroc": 0.8666666666666667,
+    "spanish_auroc": 0.5,
+    "gap_auroc": 0.3666666666666667,
+    "ci_low": 0.5,
+    "ci_high": 0.5,
+    "frozen_threshold": 0.29141832781811056,
+    "balanced_accuracy": 0.5,
+    "sensitivity": 1.0,
+    "specificity": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        19
+      ],
+      [
+        0,
+        35
+      ]
+    ]
+  },
+  "mlp": {
+    "oasis_test_auroc": 0.8800000000000001,
+    "spanish_auroc": 0.5,
+    "gap_auroc": 0.3800000000000001,
+    "ci_low": 0.5,
+    "ci_high": 0.5,
+    "frozen_threshold": 0.4976668059825897,
+    "balanced_accuracy": 0.5,
+    "sensitivity": 1.0,
+    "specificity": 0.0,
+    "confusion_matrix": [
+      [
+        0,
+        19
+      ],
+      [
+        0,
+        35
+      ]
+    ]
+  }
+}

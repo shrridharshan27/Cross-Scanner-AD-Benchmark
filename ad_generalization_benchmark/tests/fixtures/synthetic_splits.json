@@ -1,0 +1,16 @@
+{
+  "synthetic_oasis1_split": {
+    "train": ["SYN_OAS_001", "SYN_OAS_002"],
+    "val": ["SYN_OAS_003"],
+    "test": ["SYN_OAS_004"]
+  },
+  "synthetic_spanish_split": {
+    "calibration": ["SYN_ESP_001"],
+    "evaluation": ["SYN_ESP_002", "SYN_ESP_003"]
+  },
+  "synthetic_leaky_split": {
+    "train": ["SYN_LEAK_001", "SYN_LEAK_002"],
+    "val": ["SYN_LEAK_002"],
+    "test": ["SYN_LEAK_003"]
+  }
+}

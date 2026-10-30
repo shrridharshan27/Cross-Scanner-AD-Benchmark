@@ -1,0 +1,45 @@
+{
+  "seed": 42,
+  "method": "ComBat+MLP",
+  "threshold": 0.2767665684223175,
+  "internal": {
+    "auroc": 0.7733333333333333,
+    "ci_low": 0.5263157894736843,
+    "ci_high": 0.9645089285714283,
+    "balanced_accuracy": 0.7,
+    "sensitivity": 0.8,
+    "specificity": 0.6,
+    "confusion_matrix": [
+      [
+        9,
+        6
+      ],
+      [
+        1,
+        4
+      ]
+    ]
+  },
+  "external": {
+    "spanish_eval_n": 44,
+    "auroc": 0.7425287356321839,
+    "ci_low": 0.5703939205955335,
+    "ci_high": 0.8905287828947369,
+    "balanced_accuracy": 0.6666666666666666,
+    "sensitivity": 1.0,
+    "specificity": 0.3333333333333333,
+    "confusion_matrix": [
+      [
+        5,
+        10
+      ],
+      [
+        0,
+        29
+      ]
+    ]
+  },
+  "generalization_gap": 0.030804597701149405,
+  "unadapted_baseline_sp_auroc": 0.7533834586466166,
+  "adaptation_improvement": -0.010854723014432688
+}

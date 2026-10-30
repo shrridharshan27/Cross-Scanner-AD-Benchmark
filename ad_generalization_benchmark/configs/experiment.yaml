@@ -1,0 +1,19 @@
+seeds: [42, 123, 456]
+oasis1_split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+spanish_trackB_calibration: 0.20
+mlp:
+  hidden_dims: [32, 16]
+  lr: 0.001
+  max_epochs: 200
+  patience: 20
+  batch_size: 16
+dann:
+  lambda_max: 1.0
+  lambda_schedule: linear
+  lr: 0.001
+  max_epochs: 200
+  patience: 20
+bootstrap_iterations: 1000

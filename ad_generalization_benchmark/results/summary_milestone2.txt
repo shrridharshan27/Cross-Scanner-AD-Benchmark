@@ -1,0 +1,15 @@
+=== MILESTONE 2 RESULTS ===
+Date: 2026-10-29 11:40:09 UTC
+Seeds: [42, 123, 456]
+
+INTERNAL (OASIS-1 test set):
+LR:  AUROC 0.86 ± 0.08 | BalAcc 0.73 ± 0.07
+SVM: AUROC 0.85 ± 0.09 | BalAcc 0.74 ± 0.07
+MLP: AUROC 0.88 ± 0.05 | BalAcc 0.69 ± 0.07
+
+EXTERNAL (Spanish cohort, Track A):
+LR:  AUROC 0.50 ± 0.00 | Gap +0.36
+SVM: AUROC 0.59 ± 0.13 | Gap +0.26
+MLP: AUROC 0.50 ± 0.00 | Gap +0.38
+
+NOTE: Spanish n=54, wide CIs expected.

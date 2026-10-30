@@ -1,0 +1,66 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller / Testing / Caches
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE / Editor configs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large datasets & upstream download archives (74+ GB)
+datasets/
+oasis4_output/
+oasis-scripts/
+*.tar
+*.tar.gz
+*.zip
+*.nii
+*.nii.gz
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary & debug files
+*.tmp
+test.pdf
+test_playwright.pdf
